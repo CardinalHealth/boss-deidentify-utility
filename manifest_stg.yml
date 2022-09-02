@@ -1,0 +1,29 @@
+---
+applications:
+- name: boss-deidentify-utility
+  memory: 1G
+  instances: 1
+  random-route: true
+  path: build/libs/boss-deidentify-utility.jar
+  timeout: 180
+  buildpacks: [java_buildpack_offline]
+  stack: cflinuxfs3
+  services:
+  - properties-db
+  - properties-security
+  - properties-timeout
+  - properties-okta
+  - properties-url
+  - properties-scheduler
+  - properties-logger
+  - properties-other
+  - properties-key
+  - properties-storage
+  - properties-mail 
+  env:
+    SPRING_PROFILES_ACTIVE: db, customizedcontainer, pooljob, other, mail, storage
+    logging.level.org.springframework.web.context.support.StandardServletEnvironment: WARN
+    logging.level.org.springframework.core.env.StandardEnvironment: WARN
+    management.endpoints.web.exposure.include: "*"
+    management.endpoints.jmx.exposure.include: "*"
+    JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 11.+}}'
