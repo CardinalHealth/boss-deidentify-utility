@@ -6,8 +6,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
 /**
  * The main application class for <strong>DeIdentify</strong> service.
@@ -16,10 +17,11 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @ComponentScan("com.*")
 @EntityScan("com.*")
 @EnableAspectJAutoProxy
-@EnableJpaRepositories(basePackages = { "com.*" })
 @EnableBatchProcessing
-@EnableScheduling
 @SpringBootApplication
+@EnableScheduling
+@EnableAsync
+@EnableWebMvc
 public class BossDeIdentifyApplication {
 
 	public static void main(String[] args) {

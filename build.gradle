@@ -1,36 +1,38 @@
 plugins {
-	id 'org.springframework.boot' version '2.2.6.RELEASE'
+	id 'org.springframework.boot' version '2.7.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
 	id 'java'
 	id 'eclipse'
 	id 'groovy'
 	id 'jacoco'
+	id "org.sonarqube" version "2.7"
 }
-
-apply plugin: 'io.spring.dependency-management'
 
 ext {
 	securityVersion = "0.0.1-SNAPSHOT"
 	frameworkVersion = "0.0.1-SNAPSHOT"
 	domainVersion = "0.0.1-SNAPSHOT"
-	oktaVersion = "0.0.1-SNAPSHOT"
-
-	springCloudVersion = "Hoxton.SR3"
+	
+	springCloudVersion = "2021.0.3"
+	springCloudConnectorServiceVersion = "2.0.4.RELEASE"
+	cloudFoundryConnectorVersion = "2.0.4.RELEASE"
+	gcpStorageVersion = "1.2.8.RELEASE"
 	jjwtVersion = "0.9.1"
-	jasyptVersion = "2.1.2"
-	groovyVersion = "1.3-groovy-2.5"
+	jasyptVersion = "3.0.4"
+	groovyVersion = "2.1-M2-groovy-3.0"
+	groovyJsonVersion = "3.0.9"
 	cglibVersion = "3.2.2"
-	springSecurityTestVersion = "4.2.2.RELEASE"
+	springSecurityTestVersion = "5.7.2"
 	commonsBeanutilsVersion = "1.9.4"
 	dom4jVersion = "2.1.3"
 	commonsCompressVersion = "1.20"
-	hibernateValidatorVersion = "6.1.5.Final"
-	snakeyamlVersion = "1.26"
-	springSecurityWebVersion = "5.3.2.RELEASE"
+	hibernateValidatorVersion = "6.2.3.Final"
+	snakeyamlVersion = "1.30"
+	springSecurityWebVersion = "5.7.2"
 	meanbeanVersion = "2.0.3"
-	jsonSmart = "2.3"
 	db2Version = "11.5.5.0"
-	apachePoiVersion= "4.1.2"
 	ext['log4j2.version'] = '2.17.1'
+	
 }
 
 group = 'com.cardinalhealth.ids.boss2'
@@ -39,7 +41,7 @@ archivesBaseName = 'boss-deidentify-utility'
 sourceCompatibility = '11'
 targetCompatibility = '11'
 
-def nexus_url = project.hasProperty('url') ? project.property('url') : 'https://nexus.cardinalhealth.net/repository/sustech-maven-snapshot/dev/'
+def nexus_url = project.hasProperty('url') ? project.property('url') : 'https://nexus.cardinalhealth.net/repository/ids-maven-snapshot/'
 def env = project.hasProperty('env') ? project.property('env') : 'local'
 def ignoretestfaliure=  project.hasProperty('ignoretestfaliure') ? project.property('ignoretestfaliure') : 'false'
 
@@ -69,44 +71,40 @@ dependencies {
 	implementation group: 'com.cardinalhealth.ids.boss2', name: 'security', version: "${securityVersion}"
 	implementation group: 'com.cardinalhealth.ids.boss2', name: 'framework', version: "${frameworkVersion}"
 	implementation group: 'com.cardinalhealth.ids.boss2', name: 'domain', version: "${domainVersion}"
-
+	
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation group: 'org.springframework.security', name: 'spring-security-web', version: "${springSecurityWebVersion}"
+	implementation ("org.springframework.cloud:spring-cloud-gcp-starter-storage:${gcpStorageVersion}")
+	implementation "io.pivotal.cfenv:java-cfenv-boot:2.4.0"
+	implementation ("io.jsonwebtoken:jjwt:${jjwtVersion}")
 	
-	implementation "net.minidev:json-smart:${jsonSmart}"
-
-	implementation 'org.springframework.cloud:spring-cloud-spring-service-connector'
-	implementation 'org.springframework.cloud:spring-cloud-cloudfoundry-connector'  // cloud foundry runtime
-
-	implementation group: 'io.jsonwebtoken', name: 'jjwt', version:"${jjwtVersion}"
-	implementation group: 'commons-beanutils', name: 'commons-beanutils', version:"${commonsBeanutilsVersion}"
-	implementation group: 'org.apache.commons', name: 'commons-compress', version: "${commonsCompressVersion}"
-	implementation group: 'org.hibernate.validator', name: 'hibernate-validator', version: "${hibernateValidatorVersion}"
-	implementation group: 'org.yaml', name: 'snakeyaml', version: "${snakeyamlVersion}"
-
-	annotationProcessor group: 'org.projectlombok', name: 'lombok', version: '1.18.12'
-	implementation ("org.apache.poi:poi-ooxml:${apachePoiVersion}")
-
-	runtimeOnly ("com.github.ulisesbocchio:jasypt-spring-boot-starter:${jasyptVersion}")
-	runtimeOnly 'org.postgresql:postgresql'
+	implementation ("commons-beanutils:commons-beanutils:${commonsBeanutilsVersion}")
+	implementation("org.dom4j:dom4j:${dom4jVersion}")
+	implementation("org.apache.commons:commons-compress:${commonsCompressVersion}")
+	implementation("org.hibernate.validator:hibernate-validator:${hibernateValidatorVersion}")
+	implementation("org.yaml:snakeyaml:${snakeyamlVersion}")
+	implementation("org.springframework.security:spring-security-web:${springSecurityWebVersion}")
+	
+	annotationProcessor "org.projectlombok:lombok"
+	
+	//Required for mysql db.<br>
+	runtimeOnly 'com.microsoft.sqlserver:mssql-jdbc'
 	
 	// DB2 Database Driver
 	runtimeOnly("com.ibm.db2:jcc:${db2Version}")
-
-	developmentOnly group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.3.3.RELEASE'
-	implementation 'org.springframework.cloud:spring-cloud-gcp-starter-storage'
 	
+	runtimeOnly ("com.github.ulisesbocchio:jasypt-spring-boot-starter:${jasyptVersion}")
+	runtimeOnly 'org.postgresql:postgresql'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	
+	testImplementation 'org.springframework.batch:spring-batch-test'
 	testImplementation ("org.meanbean:meanbean:${meanbeanVersion}")
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation ("cglib:cglib:${cglibVersion}")
 	testCompile("org.spockframework:spock-core:${groovyVersion}")
 	testCompile("org.spockframework:spock-spring:${groovyVersion}")
+	testImplementation ("org.codehaus.groovy:groovy-json:${groovyJsonVersion}")
 	testCompile("org.springframework.security:spring-security-test:${springSecurityTestVersion}")
-	compile group: 'org.apache.commons', name: 'commons-csv', version: '1.5'
-	compile group: 'com.opencsv', name: 'opencsv', version: '5.3'
-	
-	
 }
 
 task copyCerts(type: Copy) {
@@ -127,17 +125,12 @@ jacocoTestReport {
 		xml.enabled true
 		csv.enabled false
 	}
-//	 afterEvaluate {
-//	 classDirectories.setFrom(files(classDirectories.files.collect {
-//	 fileTree(dir: it, exclude: [ '**/entity/**', '**/src/**', '**/constant/**' ])
-//	 }))
-//	 }
 }
 test.finalizedBy(project.tasks.jacocoTestReport)
 
 test {
 	jacoco {
-
+		//append = false
 		destinationFile = file("$buildDir/jacoco/jacocoTest.exec")
 	}
 	systemProperty 'spring.profiles.active', 'local'
@@ -147,5 +140,28 @@ test {
 dependencyManagement {
 	imports {
 		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
+if(env == 'local') {
+	
+	def username = System.properties['user.name']
+	
+	sonarqube {
+		properties {
+			property "sonar.projectVersion", "LOCAL-BUILD by $username"
+		}
+	}
+	
+	gradle.taskGraph.afterTask { Task task, TaskState state ->
+		if (state.executed) {
+			def runningTask = "$task"
+			if(runningTask == "task ':sonarqube'") {
+				println "Please check sonar dashboard URL below : "
+				println "==========================================================================="
+				println "http://10.32.23.196:9000/dashboard?id=boss-deidentify-utility"
+				println "==========================================================================="
+			}
+		}
 	}
 }
