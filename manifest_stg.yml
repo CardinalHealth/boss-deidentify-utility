@@ -23,7 +23,7 @@ applications:
   - properties-storage
   env:
     SPRING_PROFILES_ACTIVE: db, customizedcontainer, mail, pooljob, storage, pmoddb, cloud
-    newrelic.config.app_name: BOSS-DEV-DEIDENTIFY-UTILITY
+    newrelic.config.app_name: BOSS-STG-DEIDENTIFY-UTILITY
     logging.level.org.springframework.web.context.support.StandardServletEnvironment: WARN
     logging.level.org.springframework.core.env.StandardEnvironment: WARN
     management.endpoints.web.exposure.include: "*"
