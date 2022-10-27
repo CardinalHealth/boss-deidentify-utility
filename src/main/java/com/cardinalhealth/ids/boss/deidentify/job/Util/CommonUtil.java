@@ -23,6 +23,8 @@ public class CommonUtil {
 		for (Character ch : value.toCharArray()) {
 			if (map.containsKey(ch)) {
 				sb.append(map.get(ch));
+			}else {
+				sb.append(ch);
 			}
 		}
 		return sb.toString();

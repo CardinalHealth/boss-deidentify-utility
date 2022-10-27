@@ -7,6 +7,7 @@ import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import com.cardinalhealth.framework.utils.ESAPILogger;
@@ -33,7 +34,7 @@ public class DeIdentifyService implements IDeIdentifyService {
 	private Job utilizationDRGDeIdentifyJob;
 
 	@Override
-	//@Scheduled(cron = "${cron.expression.update.patient}")
+	@Async
 	public void deidentifyData() {
 		try {
 			logger.info("deIdentifyJob is started ");
@@ -44,6 +45,8 @@ public class DeIdentifyService implements IDeIdentifyService {
 			
 			//Utilization Job
 			jobLauncher.run(utilizationDRGDeIdentifyJob, jobParameters);
+			
+			logger.info("deIdentifyJob is end ");
 
 		} catch (Exception e) {
 			logger.error("Batch Job - Batch Job Failed || De-Identify Job ::" + e.getMessage());

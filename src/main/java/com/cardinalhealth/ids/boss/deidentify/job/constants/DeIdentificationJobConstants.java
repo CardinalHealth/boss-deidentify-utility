@@ -16,7 +16,7 @@ public class DeIdentificationJobConstants {
 	 */
 	@NoArgsConstructor
 	public static class OpenApiTags {
-		public static final String DEIDENTIFY_CONTROLLER_TAG = "de-identify-controller";
+		public static final String DEIDENTIFY_CONTROLLER_TAG = "deidentify-controller";
 	}
 
 	/**
@@ -30,15 +30,8 @@ public class DeIdentificationJobConstants {
 		@NoArgsConstructor
 		public static class DeIdentifyJobApiPaths {
 
-			public static final String DEIDENTIFY_DESC = "De-identify data on stage";
+			public static final String DEIDENTIFY_DESC = "Deidentify data on stage";
 			public static final String DEIDENTIFY_PATH = "deidentify/utility";
-		}
-		
-		@NoArgsConstructor
-		public static class WinWatcherApiPaths {
-
-			public static final String WIN_WATCHER_DESC = "Execute the Win Watcher Job.";
-			public static final String WIN_WATCHER_PATH = "job/win-watcher";
 		}
 	}
 
